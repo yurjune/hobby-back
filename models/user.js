@@ -1,32 +1,28 @@
-const Sequelize = require('sequelize');
-
-module.exports = class User extends Sequelize.Model {
-  static init(sequelize) {
-    return super.init({
-      email: {
-        type: Sequelize.STRING(40),
-        allowNull: true,
-        unique: true,
-      },
-      name: {
-        type: Sequelize.STRING(15),
-        allowNull: false,
-      },
-      password: {
-        type: Sequelize.STRING(100),
-        allowNull: false,
-      },
-    }, {
-      sequelize,
-      timestamps: true,
-      underscored: false,
-      modelName: 'User',
-      tableName: 'users',
-      paranoid: true,
-      charset: 'utf8',
-      collate: 'utf8_general_ci',
-    });
-  }
-  static associate(db) {
-  }
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define('User', {
+    email: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      unique: true,
+    },
+    name: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+    },
+    password: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+  }, {
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
+  });
+  User.associate = (db) => {
+    db.User.hasMany(db.Post);
+    db.User.hasMany(db.Comment);
+    db.User.belongsToMany(db.Post, { through: 'Like', as: 'Liked' });
+    db.User.belongsToMany(db.User, { through: 'Follow', as: 'Followers' , foreignKey: 'FollowingId' });
+    db.User.belongsToMany(db.User, { through: 'Follow', as: 'Followings', foreignKey: 'FollowerId' });
+  };
+  return User;
 };
