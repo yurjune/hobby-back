@@ -8,6 +8,7 @@ const app = express();
 const path = require('path');
 
 dotenv.config();
+const webSocket = require('./socket');
 const userRouter = require('./routes/user');
 
 const { sequelize } = require('./models/index'); // db.sequelize
@@ -41,6 +42,8 @@ app.use(session({
 
 app.use('/user', userRouter);
 
-app.listen(3060, () => {
+const server = app.listen(3060, () => {
   console.log('3060번 포트에서 대기중');
 });
+
+webSocket(server);
