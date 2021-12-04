@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const passport = require('passport');
+const passportConfig = require('./passport');
 const app = express();
 const path = require('path');
 const clock = require('./util/clock');
@@ -11,6 +13,7 @@ const clock = require('./util/clock');
 dotenv.config();
 const webSocket = require('./socket');
 const userRouter = require('./routes/user');
+const authRouter = require('./routes/auth');
 
 const { sequelize } = require('./models/index'); // db.sequelize
 
@@ -21,6 +24,8 @@ sequelize.sync()
   .catch((error) => {
     console.error(error);
   });
+
+passportConfig();
 
 app.use(cors({
   origin: 'http://localhost:3000',
@@ -41,7 +46,11 @@ app.use(session({
   },
 }));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/user', userRouter);
+app.use('/auth', authRouter);
 
 const server = app.listen(3060, () => {
   console.log('3060번 포트에서 대기중');
