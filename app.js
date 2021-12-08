@@ -14,10 +14,11 @@ dotenv.config();
 const webSocket = require('./socket');
 const userRouter = require('./routes/user');
 const authRouter = require('./routes/auth');
+const postRouter = require('./routes/post');
 
 const { sequelize } = require('./models/index'); // db.sequelize
 
-sequelize.sync()
+sequelize.sync({ force: false })
   .then(() => {
     console.log('데이터베이스 연결 성공');
   })
@@ -33,6 +34,7 @@ app.use(cors({
 }));
 
 app.use(morgan('dev'));
+app.use('/', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -51,6 +53,7 @@ app.use(passport.session());
 
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
+app.use('/post', postRouter);
 
 const server = app.listen(3060, () => {
   console.log('3060번 포트에서 대기중');
