@@ -15,6 +15,7 @@ const webSocket = require('./socket');
 const userRouter = require('./routes/user');
 const authRouter = require('./routes/auth');
 const postRouter = require('./routes/post');
+const postsRouter = require('./routes/posts');
 
 const { sequelize } = require('./models/index'); // db.sequelize
 
@@ -54,6 +55,7 @@ app.use(passport.session());
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/post', postRouter);
+app.use('/posts', postsRouter);
 
 const server = app.listen(3060, () => {
   console.log('3060번 포트에서 대기중');
