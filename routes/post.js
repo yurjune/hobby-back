@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { User, Post, Image } = require('../models');
+const { User, Post, Image, Comment } = require('../models');
 
 const router = express.Router();
 
@@ -19,6 +19,7 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 },
 });
 
+// 게시글 가져오기
 router.get('/', async (req, res, next) => {
   try {
     const post = await Post.findOne({
@@ -28,10 +29,16 @@ router.get('/', async (req, res, next) => {
         attributes: ['id', 'name'],
       },{
         model: Image,
+      },{
+        model: Comment,
+        include: [{
+          model: User,
+          attributes: ['id', 'name'],
+        }]
       }],
     })
     if (!post) {
-      res.status(403).send('게시글이 존재하지 않습니다');
+      res.status(403).send('게시글이 존재하지 않습니다!');
     }
     res.json(post);
   } catch (error) {
@@ -70,6 +77,24 @@ router.post('/images', upload.array('image'), (req, res, next) => {
   console.log('req.files:', req.files);
   const files = req.files.map((file) => file.filename);
   res.json(files);
+});
+
+router.post('/:postId/comment', async (req, res, next) => {
+  try {
+    const post = await Post.findOne({
+      where: { id: req.params.postId }
+    });
+    if (!post) return res.status(403).send('게시글이 존재하지 않습니다!');
+    const comment = await Comment.create({
+      content: req.body.content,
+      PostId: parseInt(req.params.postId, 10),
+      UserId: req.body.userId,
+    });
+    res.json(comment);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 });
 
 module.exports = router;
