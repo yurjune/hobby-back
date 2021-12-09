@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { Post, Image } = require('../models');
+const { User, Post, Image } = require('../models');
 
 const router = express.Router();
 
@@ -19,6 +19,28 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 },
 });
 
+router.get('/', async (req, res, next) => {
+  try {
+    const post = await Post.findOne({
+      where: { id: req.query.id },
+      include: [{
+        model: User,
+        attributes: ['id', 'name'],
+      },{
+        model: Image,
+      }],
+    })
+    if (!post) {
+      res.status(403).send('게시글이 존재하지 않습니다');
+    }
+    res.json(post);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+// 게시글 업로드
 router.post('/', async (req, res, next) => {
   try {
     console.log(req.body);
