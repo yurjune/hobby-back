@@ -35,8 +35,8 @@ router.get('/', async (req, res, next) => {
           model: User,
           attributes: ['id', 'name'],
         }]
-      }],
-    })
+      },],
+    });
     if (!post) {
       res.status(403).send('게시글이 존재하지 않습니다!');
     }
@@ -79,15 +79,36 @@ router.post('/images', upload.array('image'), (req, res, next) => {
   res.json(files);
 });
 
-router.post('/:postId/comment', async (req, res, next) => {
+// 대댓글 작성
+router.post('/recomment', async (req, res, next) => {
+  try {
+    const targetComment = await Comment.findOne({
+      where: { id: req.body.commentId },
+    });
+    if (!targetComment) return res.status(403).send('댓글이 존재하지 않습니다!');
+    const comment = await Comment.create({
+      content: req.body.content,
+      PostId: req.body.postId,
+      UserId: req.body.userId,
+    });
+    comment.addFather(req.body.commentId);
+    res.json(comment);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+// 댓글 작성
+router.post('/comment', async (req, res, next) => {
   try {
     const post = await Post.findOne({
-      where: { id: req.params.postId }
+      where: { id: req.body.postId }
     });
     if (!post) return res.status(403).send('게시글이 존재하지 않습니다!');
     const comment = await Comment.create({
       content: req.body.content,
-      PostId: parseInt(req.params.postId, 10),
+      PostId: req.body.postId,
       UserId: req.body.userId,
     });
     res.json(comment);
