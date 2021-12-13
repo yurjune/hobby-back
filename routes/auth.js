@@ -18,7 +18,7 @@ router.post('/join', async (req, res, next) => {
       name,
       password: hash,
     });
-    res.status(201).send('ok');
+    return res.status(201).send('ok');
   } catch (error) {
     console.error(error);
     next(error);
@@ -39,7 +39,7 @@ router.post('/login', (req, res, next) => {
         console.error(loginError);
         return next(loginError);
       }
-      res.status(201).send('ok');
+      return res.status(201).send('ok');
     });
   })(req, res, next);
 });
@@ -47,7 +47,7 @@ router.post('/login', (req, res, next) => {
 router.get('/logout', (req, res) => {
   req.logout();
   req.session.destroy();
-  res.status(200).send('ok');
+  return res.status(200).send('ok');
 });
 
 module.exports = router;
