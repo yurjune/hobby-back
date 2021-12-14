@@ -29,9 +29,11 @@ router.get('/', async (req, res, next) => {
         include: [{
           model: User,
           as: 'Followings',
+          attributes: ['id', 'name'],
         },{
           model: User,
           as: 'Followers',
+          attributes: ['id', 'name'],
         }],
       },{
         model: Image,
@@ -39,12 +41,17 @@ router.get('/', async (req, res, next) => {
         model: Comment,
         include: [{
           model: User,
+          attributes: ['id', 'name'],
         },{
           model: Comment,
           as: 'Father',
         },{
           model: Comment,
           as: 'Son',
+          include: [{
+            model: User,
+            attributes: ['id', 'name'],
+          }]
         }],
       }],
     });
