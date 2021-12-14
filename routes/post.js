@@ -39,6 +39,12 @@ router.get('/', async (req, res, next) => {
         model: Comment,
         include: [{
           model: User,
+        },{
+          model: Comment,
+          as: 'Father',
+        },{
+          model: Comment,
+          as: 'Son',
         }],
       }],
     });
@@ -85,7 +91,7 @@ router.post('/images', upload.array('image'), (req, res, next) => {
 });
 
 // 대댓글 작성
-router.post('/recomment', async (req, res, next) => {
+router.post('/reply', async (req, res, next) => {
   try {
     const targetComment = await Comment.findOne({
       where: { id: req.body.commentId },
