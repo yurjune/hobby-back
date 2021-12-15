@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { User, Post, Image, Comment, Follow } = require('../models');
+const { User, Post, Image, Comment } = require('../models');
 
 const router = express.Router();
 
@@ -35,6 +35,10 @@ router.get('/', async (req, res, next) => {
           as: 'Followers',
           attributes: ['id', 'name'],
         }],
+      },{
+        model: User,
+        as: 'Likers',
+        attributes: ['id', 'name'],
       },{
         model: Image,
       },{
@@ -130,6 +134,35 @@ router.post('/comment', async (req, res, next) => {
       UserId: req.body.userId,
     });
     return res.json(comment);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+// 좋아요
+router.patch('/like', async (req, res, next) => {
+  try {
+    const postId = parseInt(req.query.postId, 10);
+    const likerId = parseInt(req.query.likerId, 10);
+    const post = await Post.findOne({ where: { id: postId, }});
+    if (!post) return res.status(403).send('게시글이 존재하지 않습니다!');
+    await post.addLikers(likerId);
+    return res.send('success');
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+router.patch('/unlike', async (req, res, next) => {
+  try {
+    const postId = parseInt(req.query.postId, 10);
+    const likerId = parseInt(req.query.likerId, 10);
+    const post = await Post.findOne({ where: { id: postId, }});
+    if (!post) return res.status(403).send('게시글이 존재하지 않습니다!');
+    await post.removeLikers(likerId);
+    return res.send('success');
   } catch (error) {
     console.log(error);
     next(error);
