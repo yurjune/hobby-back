@@ -169,4 +169,50 @@ router.patch('/unlike', async (req, res, next) => {
   }
 });
 
+// 수정할 글 불러오기
+router.get('/editpost', async (req, res, next) => {
+  try {
+    const post = await Post.findOne({ 
+      where: { id: req.query.postId },
+      include: [{
+        model: Image,
+      },],
+    });
+    if (!post) return res.status(403).send('게시글이 존재하지 않습니다!');
+    res.send(post);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+// 글 수정하기
+router.patch('/editpost', async (req, res, next) => {
+  try {
+    await Post.update({
+      category: req.body.category,
+      content: req.body.content,
+    },{ 
+      where: { id: req.body.postId },
+    });
+    const post = await Post.findOne({ where: { id: req.body.postId }});
+    if (req.body.image.length >= 1) {  // 이미지 첨부된 경우
+      await Image.destroy({ // 먼저 기존 이미지 지우기
+        where: { postId: req.body.postId }
+      });
+      if (req.body.image.length >= 2) {
+        const images = await Promise.all(req.body.image.map((image) => Image.create({ src: image })));
+        await post.addImages(images);
+      } else {
+        const image = await Image.create({ src: req.body.image[0] });
+        await post.addImages(image);
+      }
+    }
+    res.send('success');
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 module.exports = router;
