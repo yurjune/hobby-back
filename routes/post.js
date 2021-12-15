@@ -179,7 +179,7 @@ router.get('/editpost', async (req, res, next) => {
       },],
     });
     if (!post) return res.status(403).send('게시글이 존재하지 않습니다!');
-    res.send(post);
+    return res.send(post);
   } catch (error) {
     console.log(error);
     next(error);
@@ -189,13 +189,14 @@ router.get('/editpost', async (req, res, next) => {
 // 글 수정하기
 router.patch('/editpost', async (req, res, next) => {
   try {
+    const post = await Post.findOne({ where: { id: req.body.postId }});
+    if (!post) return res.status(403).send('게시글이 존재하지 않습니다!');
     await Post.update({
       category: req.body.category,
       content: req.body.content,
     },{ 
       where: { id: req.body.postId },
     });
-    const post = await Post.findOne({ where: { id: req.body.postId }});
     if (req.body.image.length >= 1) {  // 이미지 첨부된 경우
       await Image.destroy({ // 먼저 기존 이미지 지우기
         where: { postId: req.body.postId }
@@ -208,7 +209,22 @@ router.patch('/editpost', async (req, res, next) => {
         await post.addImages(image);
       }
     }
-    res.send('success');
+    return res.send('success');
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+// 글 삭제
+router.delete('/', async (req, res, next) => {
+  try {
+    const post = await Post.findOne({ where: { id: req.query.postId }});
+    if (!post) return res.status(403).send('게시글이 존재하지 않습니다!');
+    // Image.destroy가 Post.destroy보다 먼저 실행되야 삭제되는듯
+    await Image.destroy({ where: { PostId: req.query.postId } });
+    await Post.destroy({ where: { id: req.query.postId }, });
+    return res.send('삭제되었습니다');
   } catch (error) {
     console.log(error);
     next(error);
