@@ -44,4 +44,11 @@ router.post('/reply', async (req, res, next) => {
   }
 });
 
+router.delete('/', async (req, res, next) => {
+  const comment = await Comment.findOne({ where: { id: req.query.commentId } });
+  if (!comment) return res.status(403).send('댓글이 존재하지 않습니다!');
+  await Comment.destroy({ where: { id: req.query.commentId } });
+  return res.send('댓글이 삭제되었습니다!');
+});
+
 module.exports = router;
