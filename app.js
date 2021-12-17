@@ -19,7 +19,7 @@ const webSocket = require('./socket');
 
 const { sequelize } = require('./models/index'); // db.sequelize
 
-sequelize.sync({ force: false })
+sequelize.sync()
   .then(() => {
     console.log('데이터베이스 연결 성공');
   })
