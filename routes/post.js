@@ -101,45 +101,6 @@ router.post('/images', upload.array('image'), (req, res, next) => {
   return res.json(files);
 });
 
-// 대댓글 작성
-router.post('/reply', async (req, res, next) => {
-  try {
-    const targetComment = await Comment.findOne({
-      where: { id: req.body.commentId },
-    });
-    if (!targetComment) return res.status(403).send('댓글이 존재하지 않습니다!');
-    const comment = await Comment.create({
-      content: req.body.content,
-      PostId: req.body.postId,
-      UserId: req.body.userId,
-    });
-    await comment.addFather(req.body.commentId);
-    return res.json(comment);
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-});
-
-// 댓글 작성
-router.post('/comment', async (req, res, next) => {
-  try {
-    const post = await Post.findOne({
-      where: { id: req.body.postId }
-    });
-    if (!post) return res.status(403).send('게시글이 존재하지 않습니다!');
-    const comment = await Comment.create({
-      content: req.body.content,
-      PostId: req.body.postId,
-      UserId: req.body.userId,
-    });
-    return res.json(comment);
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-});
-
 // 좋아요
 router.patch('/like', async (req, res, next) => {
   try {
