@@ -6,8 +6,8 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const passportConfig = require('./passport');
-const app = express();
 const path = require('path');
+const app = express();
 
 dotenv.config();
 const userRouter = require('./routes/user');
@@ -15,7 +15,6 @@ const authRouter = require('./routes/auth');
 const postRouter = require('./routes/post');
 const postsRouter = require('./routes/posts');
 const commentRouter = require('./routes/comment');
-const webSocket = require('./socket');
 
 const { sequelize } = require('./models/index'); // db.sequelize
 
@@ -39,7 +38,8 @@ app.use('/', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(session({
+
+const sessionMiddleware = session({
   resave: false,
   saveUninitialized: false,
   secret: process.env.COOKIE_SECRET,
@@ -47,7 +47,8 @@ app.use(session({
     httpOnly: true,
     secure: false,
   },
-}));
+})
+app.use(sessionMiddleware);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -61,5 +62,3 @@ app.use('/comment', commentRouter);
 const server = app.listen(3060, () => {
   console.log('3060번 포트에서 대기중');
 });
-
-webSocket(server, app);
