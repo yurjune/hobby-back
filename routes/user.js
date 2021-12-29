@@ -55,4 +55,35 @@ router.delete('/follow', async (req, res, next) => {
   }
 });
 
+router.get('/time', async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { email: req.query.email },
+      attributes: ['id', 'time'],
+    });
+    return res.send(user);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.patch('/time', async (req, res, next) => {
+  try {
+    console.log(req.body.userId)
+    console.log(req.body.time)
+    const user = await User.findOne({ where: { id: req.body.userId }});
+    if (!user) return res.status(403).send('사용자가 존재하지 않습니다!');
+    await User.update({
+      time: req.body.time,
+    }, {
+      where: { id: req.body.userId },
+    });
+    return res.send('ok');
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 module.exports = router;
