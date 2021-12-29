@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(100),
       allowNull: false,
     },
+    time: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   }, {
     charset: 'utf8',
     collate: 'utf8_general_ci',
