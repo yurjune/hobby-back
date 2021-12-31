@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const bcrypt = require('bcrypt');
 const { User, Image } = require('../models');
 
 const router = express.Router();
@@ -121,7 +122,7 @@ router.post('/image', upload.single('profile'), async (req, res, next) => {
 router.post('/profile', async (req, res, next) => {
   try {
     const exUser = await User.findOne({ where: { id: req.body.userId }});
-    if (!exUser) return res.status(403).send('사용자가 존재하지 않습니다');
+    if (!exUser) return res.status(403).send('사용자가 존재하지 않습니다!');
     if (req.body.profileImage) {
       // 기존 프로필 사진을 삭제후 새로 등록한다
       const prevImage = await exUser.getImage();
@@ -137,6 +138,26 @@ router.post('/profile', async (req, res, next) => {
       where: { id: req.body.userId },
     });
     return res.send('ok');
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// 비밀번호 변경
+router.post('/password', async (req, res, next) => {
+  try {
+    const exUser = await User.findOne({ where: { id: req.body.userId }});
+    if (!exUser) return res.status(403).send('사용자가 존재하지 않습니다!');
+    const result = await bcrypt.compare(req.body.oldPassword, exUser.password);
+    if (!result) return res.send('비밀번호가 일치하지 않습니다!');
+    const hash = await bcrypt.hash(req.body.password, 10);
+    await User.update({
+      password: hash,
+    }, {
+      where: { id: req.body.userId },
+    });
+    return res.send('비밀번호가 변경되었습니다!');
   } catch (error) {
     console.error(error);
     next(error);
