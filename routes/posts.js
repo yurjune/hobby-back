@@ -10,6 +10,10 @@ router.get('/', async (req, res, next) => {
       include: [{
         model: User,
         attributes: ['id', 'name'],
+        include: [{
+          model: Image,
+          attributes: ['src'],
+        }]
       },{
         model: User,
         as: 'Likers',

@@ -34,6 +34,9 @@ router.get('/', async (req, res, next) => {
           model: User,
           as: 'Followers',
           attributes: ['id', 'name'],
+        }, {
+          model: Image, // 프로필 사진
+          attributes: ['src'],
         }],
       },{
         model: User,
