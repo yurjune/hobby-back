@@ -32,4 +32,35 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// 특정 유저의 게시글들 불러오기
+router.get('/profile', async (req, res, next) => {
+  try {
+    const results = await Post.findAll({
+      where: { UserId: req.query.userId },
+      order: [['createdAt' , 'DESC']],
+      include: [{
+        model: User,
+        attributes: ['id', 'name'],
+        include: [{
+          model: Image,
+          attributes: ['src'],
+        }]
+      },{
+        model: User,
+        as: 'Likers',
+        attributes: ['id'],
+      },{
+        model: Image,
+      },{
+        model: Comment,
+        attributes: ['id'],
+      }],
+    });
+    return res.json(results);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 module.exports = router;

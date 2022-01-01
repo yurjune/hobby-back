@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const { User, Image } = require('../models');
+const { User, Image, Post, Comment } = require('../models');
 
 const router = express.Router();
 
@@ -43,6 +43,39 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// 특정 사용자 불러오기
+router.get('/person', async (req, res, next) => {
+  try {
+    const user = await User.findOne({ 
+      where: { id: req.query.userId },
+      attributes: {
+        exclude: ['password'],
+      },
+      include: [{
+        model: Image,
+      },{
+        model: Post,
+        attributes: ['id'],
+      },{
+        model: User,
+        as: 'Followings',
+        attributes: ['id', 'name'],
+      },{
+        model: User,
+        as: 'Followers',
+        attributes: ['id', 'name'],
+      }, {
+        model: Image, // 프로필 사진
+        attributes: ['src'],
+      }],
+    });
+    return res.json(user);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 // 팔로우
 router.patch('/follow', async (req, res, next) => {
   try {
@@ -67,7 +100,10 @@ router.delete('/follow', async (req, res, next) => {
   try {
     const followingId = parseInt(req.query.followingId, 10);
     const followerId = parseInt(req.query.followerId, 10);
-    const followingUser = await User.findOne({ where: { id: followingId }});
+    const followingUser = await User.findOne({
+      where: { id: followingId },
+      attributes: ['id', 'name'],
+    });
 
     if (!followingUser) return res.status(403).send('없는 사용자입니다');
     await followingUser.removeFollowers(followerId);
