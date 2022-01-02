@@ -84,6 +84,7 @@ router.post('/', async (req, res, next) => {
       UserId: req.body.id,
       category: req.body.category,
       content: req.body.content,
+      time: req.body.time,
     });
     if (req.body.image.length >= 1) {  // 이미지 첨부된 경우
       if (req.body.image.length >= 2) {
