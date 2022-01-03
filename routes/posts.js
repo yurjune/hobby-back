@@ -5,7 +5,11 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
   try {
+    const limit = parseInt(req.query.limit, 10);
+    const page = parseInt(req.query.page, 10);
     const results = await Post.findAll({
+      limit,
+      offset: limit * (page),
       order: [['createdAt' , 'DESC']],
       include: [{
         model: User,
