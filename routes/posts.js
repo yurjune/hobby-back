@@ -113,8 +113,19 @@ router.get('/detail', async (req, res, next) => {
 // 특정 유저의 게시글들 불러오기
 router.get('/profile', async (req, res, next) => {
   try {
+    const limit = parseInt(req.query.limit, 10);
+    const page = parseInt(req.query.page, 10);
+    const userId = parseInt(req.query.userId, 10);
+    console.log(page)
+    const where = {};
+    if (userId) {
+      where.Userid = userId;
+    }
+
     const results = await Post.findAll({
-      where: { UserId: req.query.userId },
+      where,
+      limit,
+      offset: limit * (page),
       order: [['createdAt' , 'DESC']],
       include: [{
         model: User,
