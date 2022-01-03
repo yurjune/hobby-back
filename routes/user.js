@@ -163,7 +163,9 @@ router.post('/profile', async (req, res, next) => {
     if (req.body.profileImage) {
       // 기존 프로필 사진을 삭제후 새로 등록한다
       const prevImage = await exUser.getImage();
-      await Image.destroy({ where: { src: prevImage.dataValues.src } })
+      if (prevImage) {
+        await Image.destroy({ where: { src: prevImage.dataValues.src } })
+      }
       const image = await Image.create({
         src: req.body.profileImage,
       });
