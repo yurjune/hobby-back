@@ -31,6 +31,7 @@ router.get('/', async (req, res, next) => {
         },
         include: [{
           model: Image,
+          attributes: ['src'],
         }]
       });
       return res.status(200).json(fullUserWithoutPassword);
