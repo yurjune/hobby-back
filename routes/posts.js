@@ -45,7 +45,7 @@ router.get('/detail', async (req, res, next) => {
     const lastId = parseInt(req.query.lastId, 10);
     const where = {};
     if (lastId) {
-      where.id = { [Op.lt]: lastId }
+      where.id = { [Op.lte]: lastId }
     }
 
     const posts = await Post.findAll({
