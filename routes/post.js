@@ -19,67 +19,6 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 },
 });
 
-// 게시글 가져오기
-router.get('/', async (req, res, next) => {
-  try {
-    const post = await Post.findOne({
-      where: { id: req.query.id },
-      include: [{
-        model: User,
-        include: [{
-          model: User,
-          as: 'Followings',
-          attributes: ['id', 'name'],
-        },{
-          model: User,
-          as: 'Followers',
-          attributes: ['id', 'name'],
-        }, {
-          model: Image, // 프로필 사진
-          attributes: ['src'],
-        }],
-      },{
-        model: User,
-        as: 'Likers',
-        attributes: ['id', 'name'],
-      },{
-        model: Image,
-        attributes: ['src'],
-      },{
-        model: Comment,
-        include: [{
-          model: User,
-          attributes: ['id', 'name'],
-          include: [{
-            model: Image,
-            attributes: ['src'],
-          }]
-        },{
-          model: Comment,
-          as: 'Father',
-        },{
-          model: Comment,
-          as: 'Son',
-          include: [{
-            model: User,
-            attributes: ['id', 'name'],
-            include: [{
-              model: Image,
-              attributes: ['src'],
-            }]
-          }]
-        }],
-      }],
-    });
-    if (!post) {
-      return res.status(403).send('게시글이 존재하지 않습니다!');
-    }
-    return res.json(post);
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-});
 
 // 게시글 업로드
 router.post('/', async (req, res, next) => {
