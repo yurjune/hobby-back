@@ -22,10 +22,8 @@ const upload = multer({
 // 게시글 업로드
 router.post('/', async (req, res, next) => {
   try {
-    console.log(req.body);
     const post = await Post.create({
       UserId: req.body.id,
-      category: req.body.category,
       content: req.body.content,
       time: req.body.time,
     });
@@ -111,7 +109,6 @@ router.patch('/editpost', async (req, res, next) => {
     const post = await Post.findOne({ where: { id: req.body.postId }});
     if (!post) return res.status(403).send('게시글이 존재하지 않습니다!');
     await Post.update({
-      category: req.body.category,
       content: req.body.content,
     },{ 
       where: { id: req.body.postId },
