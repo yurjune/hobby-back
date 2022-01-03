@@ -1,6 +1,6 @@
 const express = require('express');
 const { Op } = require('sequelize');
-const { Post, Image, User, Comment } = require('../models');
+const { Post, Image, User, Comment, Hashtag } = require('../models');
 const router = express.Router();
 
 // 메인페이지 게시글 가져오기
@@ -116,7 +116,6 @@ router.get('/profile', async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10);
     const page = parseInt(req.query.page, 10);
     const userId = parseInt(req.query.userId, 10);
-    console.log(page)
     const where = {};
     if (userId) {
       where.Userid = userId;
@@ -128,6 +127,46 @@ router.get('/profile', async (req, res, next) => {
       offset: limit * (page),
       order: [['createdAt' , 'DESC']],
       include: [{
+        model: User,
+        attributes: ['id', 'name'],
+        include: [{
+          model: Image,
+          attributes: ['src'],
+        }]
+      },{
+        model: User,
+        as: 'Likers',
+        attributes: ['id'],
+      },{
+        model: Image,
+        attributes: ['src'],
+      },{
+        model: Comment,
+        attributes: ['id'],
+      }],
+    });
+    return res.json(results);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// 해시태그 게시글들 불러오기
+router.get('/hashtag', async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit, 10);
+    const page = parseInt(req.query.page, 10);
+    const tag = decodeURIComponent(req.query.tag);
+
+    const results = await Post.findAll({
+      limit,
+      offset: limit * (page),
+      order: [['createdAt' , 'DESC']],
+      include: [{
+        model: Hashtag,
+        where: { name: tag }, // include 안에 where 가능
+      },{
         model: User,
         attributes: ['id', 'name'],
         include: [{

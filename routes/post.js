@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { User, Post, Image, Comment } = require('../models');
+const { User, Post, Image, Comment, Hashtag } = require('../models');
 
 const router = express.Router();
 
@@ -19,7 +19,6 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 },
 });
 
-
 // 게시글 업로드
 router.post('/', async (req, res, next) => {
   try {
@@ -30,6 +29,13 @@ router.post('/', async (req, res, next) => {
       content: req.body.content,
       time: req.body.time,
     });
+    const hashtags = req.body.content.match(/#[^\s#]+/g);
+    if (hashtags) {
+      const result = await Promise.all(hashtags.map((tag) => Hashtag.findOrCreate({
+        where: { name: tag.slice(1).toLowerCase() },
+      }))); // [[#노드, true], [#리액트, true]]
+      await post.addHashtags(result.map((v) => v[0]));
+    }
     if (req.body.image.length >= 1) {  // 이미지 첨부된 경우
       if (req.body.image.length >= 2) {
         const images = await Promise.all(req.body.image.map((image) => Image.create({ src: image })));
