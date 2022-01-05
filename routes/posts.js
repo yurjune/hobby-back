@@ -3,14 +3,11 @@ const { Op } = require('sequelize');
 const { Post, Image, User, Comment, Hashtag } = require('../models');
 const router = express.Router();
 
-// 메인페이지 게시글 가져오기
-router.get('/', async (req, res, next) => {
+// ssr
+router.get('/pre', async (req, res, next) => {
   try {
-    const limit = parseInt(req.query.limit, 10);
-    const page = parseInt(req.query.page, 10);
     const results = await Post.findAll({
-      limit,
-      offset: limit * (page),
+      limit: 8,
       order: [['createdAt' , 'DESC']],
       include: [{
         model: User,
@@ -37,7 +34,41 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// 게시글 가져오기
+// 메인페이지 게시글 가져오기
+router.get('/', async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit, 10);
+    const page = parseInt(req.query.page, 10);
+    const results = await Post.findAll({
+      limit,
+      offset: limit * (page + 2),
+      order: [['createdAt' , 'DESC']],
+      include: [{
+        model: User,
+        attributes: ['id', 'name'],
+        include: [{
+          model: Image,
+          attributes: ['src'],
+        }]
+      },{
+        model: User,
+        as: 'Likers',
+        attributes: ['id'],
+      },{
+        model: Image,
+      },{
+        model: Comment,
+        attributes: ['id'],
+      }],
+    });
+    return res.json(results);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// 상세게시글 가져오기
 router.get('/detail', async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit, 10);
