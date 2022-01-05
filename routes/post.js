@@ -113,6 +113,13 @@ router.patch('/editpost', async (req, res, next) => {
     },{ 
       where: { id: req.body.postId },
     });
+    const hashtags = req.body.content.match(/#[^\s#]+/g);
+    if (hashtags) {
+      const result = await Promise.all(hashtags.map((tag) => Hashtag.findOrCreate({
+        where: { name: tag.slice(1).toLowerCase() },
+      }))); // [[#노드, true], [#리액트, true]]
+      await post.addHashtags(result.map((v) => v[0]));
+    }
     if (req.body.image.length >= 1) {  // 이미지 첨부된 경우
       await Image.destroy({ // 먼저 기존 이미지 지우기
         where: { postId: req.body.postId }
