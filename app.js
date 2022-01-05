@@ -68,6 +68,6 @@ app.use('/post', postRouter);
 app.use('/posts', postsRouter);
 app.use('/comment', commentRouter);
 
-const server = app.listen(3060, () => {
-  console.log('3060번 포트에서 대기중');
+app.listen(80, () => {
+  console.log('80 포트에서 대기중');
 });
