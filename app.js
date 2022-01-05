@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'nodebird.com'],
+  origin: ['http://localhost:3000', 'nodebird.com', 'https://hobby-front.vercel.app'],
   credentials: true,
 }));
 
@@ -67,6 +67,10 @@ app.use('/auth', authRouter);
 app.use('/post', postRouter);
 app.use('/posts', postsRouter);
 app.use('/comment', commentRouter);
+
+app.get('/', (req, res) => {
+  res.send('hello express');
+});
 
 app.listen(80, () => {
   console.log('80 포트에서 대기중');
