@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const passportConfig = require('./passport');
 const path = require('path');
+const hpp = require('hpp');
+const helmet = require('helmet');
 const app = express();
 
 dotenv.config();
