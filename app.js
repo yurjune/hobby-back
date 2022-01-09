@@ -38,8 +38,18 @@ if (process.env.NODE_ENV === "production") {
   app.use(morgan('dev'));
 }
 
+app.use((req, res, next) => {
+  res.removeHeader("Cross-Origin-Resource-Policy")
+  res.removeHeader("Cross-Origin-Embedder-Policy")
+  next();
+});
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'nodebird.com', 'https://hobby-front.vercel.app'],
+  origin: [
+    'http://localhost:3000',
+    'http://ec2-3-35-204-10.ap-northeast-2.compute.amazonaws.com',
+    'http://ec2-3-35-204-10.ap-northeast-2.compute.amazonaws.com:3000'
+  ],
   credentials: true,
 }));
 
@@ -72,6 +82,6 @@ app.get('/', (req, res) => {
   res.send('hello express');
 });
 
-app.listen(80, () => {
-  console.log('80 포트에서 대기중');
+app.listen(3060, () => {
+  console.log('3060 포트에서 대기중');
 });
