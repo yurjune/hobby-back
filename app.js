@@ -48,7 +48,9 @@ app.use(cors({
   origin: [
     'http://localhost:3000',
     'http://ec2-3-35-204-10.ap-northeast-2.compute.amazonaws.com',
-    'http://ec2-3-35-204-10.ap-northeast-2.compute.amazonaws.com:3000'
+    'http://ec2-3-35-204-10.ap-northeast-2.compute.amazonaws.com:3000',
+    'http://ec2-3-37-120-204.ap-northeast-2.compute.amazonaws.com',
+    'http://ec2-3-37-120-204.ap-northeast-2.compute.amazonaws.com:3000',
   ],
   credentials: true,
 }));
