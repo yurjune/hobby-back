@@ -82,6 +82,6 @@ app.get('/', (req, res) => {
   res.send('hello express');
 });
 
-app.listen(3060, () => {
-  console.log('3060 포트에서 대기중');
+app.listen(process.env.SERVER_PORT, () => {
+  console.log(`${process.env.SERVER_PORT} 포트에서 대기중`);
 });
