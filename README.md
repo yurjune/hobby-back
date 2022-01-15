@@ -15,8 +15,8 @@
 <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=Node.js&logoColor=white"/><a/>
 <img src="https://img.shields.io/badge/Express-000000?style=flat-square&logo=Express&logoColor=white"/><a/>
 <img src="https://img.shields.io/badge/MYSQL-4479A1?style=flat-square&logo=MySQL&logoColor=white"/><a/>
-+ Node.js의 express를 사용하여 API서버를 구축하였습니다.  
-+ MYSQL을 DB로 사용하였습니다.
++ Node.js의 Express를 사용하여 API서버를 구축하였습니다.  
++ MySQL을 DB로 사용하였습니다.
 <br/>
 
 프론트엔드:
@@ -32,6 +32,19 @@
 
 배포:
 + Amazon Web Service를 통해 배포하였습니다.
+<br/>
+
+### :bulb: 고려한 포인트
+좋아요, 팔로우와 같이 중복되는 로직들은 재사용할 수 있도록 custom hook을 이용하였습니다.  
+복잡한 컴포넌트는 유지보수와 재사용이 용이하도록 비즈니스 로직과 뷰를 분리하였습니다. 
+<br/>
+<br/>
+
+## :sunny: 구조
+
+### :bulb: 데이터베이스
+![hobbysns ERD](https://user-images.githubusercontent.com/84958904/149623682-17b1772e-9804-47d6-9470-0c19e8939b54.png)
+<br/>
 <br/>
 
 ## :sunny: 주요 페이지
