@@ -48,8 +48,7 @@ app.use(cors({
   origin: [
     'http://localhost:8080',
     'http://hobbysns.tk',
-    'http://ec2-13-209-33-201.ap-northeast-2.compute.amazonaws.com',
-    'http://ec2-13-209-33-201.ap-northeast-2.compute.amazonaws.com:8080',
+    'http://hobbysns.ga',
   ],
   credentials: true,
 }));
